@@ -21,9 +21,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <ToastProvider>
-            <div className="min-h-screen bg-gray-50">
-              {children}
-            </div>
+            {children}
           </ToastProvider>
         </AuthProvider>
       </body>

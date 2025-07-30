@@ -222,10 +222,10 @@ export default function EventPage({ params }: EventPageProps) {
 
   if (loading || loadingEvent) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading event...</p>
+      <div className="min-h-screen event-background flex items-center justify-center">
+        <div className="text-center relative z-10">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-300 border-t-gray-700 mx-auto"></div>
+          <p className="mt-6 text-gray-700 text-lg font-medium">Loading event...</p>
         </div>
       </div>
     );
@@ -233,10 +233,10 @@ export default function EventPage({ params }: EventPageProps) {
 
   if (!event) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Event not found</h2>
-          <Button onClick={() => router.push('/dashboard')}>
+      <div className="min-h-screen event-background flex items-center justify-center">
+        <div className="text-center relative z-10 glass-card p-8 rounded-2xl">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Event not found</h2>
+          <Button onClick={() => router.push('/dashboard')} className="bg-gray-700 text-white hover:bg-gray-800">
             Back to Dashboard
           </Button>
         </div>
@@ -274,32 +274,32 @@ export default function EventPage({ params }: EventPageProps) {
     };
 
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md text-center">
-          <div className="mb-6">
-            <Calendar className="w-16 h-16 text-primary-600 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">{event.title}</h2>
-            <p className="text-gray-600 mb-4">{event.description}</p>
-            <div className="flex items-center justify-center text-sm text-gray-500 mb-6">
-              <Users className="w-4 h-4 mr-1" />
-              {event.participants.length} participant{event.participants.length !== 1 ? 's' : ''}
+      <div className="min-h-screen event-background flex items-center justify-center">
+        <div className="max-w-md mx-auto p-8 glass-card rounded-2xl text-center relative z-10">
+          <div className="mb-8">
+            <Calendar className="w-20 h-20 text-gray-700 mx-auto mb-6" />
+            <h2 className="text-3xl font-bold text-gray-800 mb-3 drop-shadow-sm">{event.title}</h2>
+            <p className="text-gray-700 mb-6 leading-relaxed">{event.description || 'No description provided'}</p>
+            <div className="flex items-center justify-center text-gray-600 mb-6">
+              <Users className="w-5 h-5 mr-2" />
+              <span className="font-medium">{event.participants.length} participant{event.participants.length !== 1 ? 's' : ''}</span>
             </div>
           </div>
           
           <div className="space-y-4">
-            <p className="text-sm text-gray-600">
-              You've been invited to join this event! Click below to participate in the planning.
+            <p className="text-gray-700 leading-relaxed">
+              🎉 You've been invited to join this event! Click below to participate in the planning.
             </p>
             
-            <Button onClick={handleJoinEvent} className="w-full">
-              <UserPlus className="w-4 h-4 mr-2" />
+            <Button onClick={handleJoinEvent} className="w-full bg-gray-700 text-white hover:bg-gray-800 hover:scale-105 transition-all duration-300 py-3">
+              <UserPlus className="w-5 h-5 mr-2" />
               Join Event
             </Button>
             
             <Button
               variant="outline"
               onClick={() => router.push('/dashboard')}
-              className="w-full"
+              className="w-full border-gray-400 text-gray-700 hover:bg-gray-100"
             >
               Back to Dashboard
             </Button>
@@ -310,7 +310,7 @@ export default function EventPage({ params }: EventPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50/30 to-pink-50/30">
+    <div className="min-h-screen event-background">
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-lg shadow-xl border-b border-white/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -325,7 +325,7 @@ export default function EventPage({ params }: EventPageProps) {
               </Button>
               <div>
                 <h1 className="text-xl font-bold text-gray-900">{event.title}</h1>
-                <p className="text-sm text-gray-600">{event.description}</p>
+                <p className="text-sm text-gray-600">{event.description || 'No description provided'}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">

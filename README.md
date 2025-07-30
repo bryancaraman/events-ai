@@ -157,7 +157,7 @@ src/
 ├── lib/                  # Core utilities
 │   ├── firebase.ts       # Firebase client config
 │   ├── firebase-admin.ts # Firebase admin config
-│   ├── ai-agent.ts       # AI agent implementation
+│   ├── langchain-agent.ts # AI agent implementation
 │   └── db.ts             # Database operations
 └── types/                # TypeScript definitions
 ```

@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true,
-  },
   webpack: (config, { isServer }) => {
     // Handle undici module parsing issues
     config.externals = config.externals || [];

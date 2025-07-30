@@ -49,7 +49,7 @@ export default function DashboardPage() {
   const handleCreateEvent = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!newEventTitle || !newEventDescription) {
+    if (!newEventTitle) {
       return;
     }
 
@@ -62,7 +62,7 @@ export default function DashboardPage() {
         },
         body: JSON.stringify({
           title: newEventTitle,
-          description: newEventDescription,
+          description: newEventDescription || '',
           createdBy: user?.id,
         }),
       });
@@ -124,17 +124,17 @@ export default function DashboardPage() {
 
   if (loading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+      <div className="min-h-screen dashboard-background flex items-center justify-center">
+        <div className="text-center relative z-10">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-300 border-t-gray-700 mx-auto"></div>
+          <p className="mt-6 text-gray-700 text-lg font-medium">Loading your dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50/30 to-pink-50/30">
+    <div className="min-h-screen dashboard-background">
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-lg shadow-xl border-b border-white/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -164,44 +164,75 @@ export default function DashboardPage() {
               Create New Event
             </Button>
           ) : (
-            <div className="bg-gradient-to-br from-white to-purple-50/50 rounded-2xl shadow-xl border border-white/50 p-6 mb-6 backdrop-blur-sm">
-              <h2 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">Create New Event</h2>
-              <form onSubmit={handleCreateEvent} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Event Title
-                  </label>
-                  <Input
-                    value={newEventTitle}
-                    onChange={(e) => setNewEventTitle(e.target.value)}
-                    placeholder="Enter event title"
-                    required
-                  />
+            <div className="glass-card rounded-2xl p-8 mb-6 relative overflow-hidden">
+              {/* Decorative background elements */}
+              <div className="absolute -top-4 -right-4 w-8 h-8 bg-gradient-to-r from-blue-300 to-purple-300 rounded-full opacity-30"></div>
+              <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-gradient-to-r from-purple-300 to-indigo-300 rounded-full opacity-30"></div>
+              
+              <div className="relative z-10">
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                    Create New Event
+                  </h2>
+                  <p className="text-gray-600 text-sm">Plan something amazing with your friends! 🎉</p>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description
-                  </label>
-                  <Input
-                    value={newEventDescription}
-                    onChange={(e) => setNewEventDescription(e.target.value)}
-                    placeholder="Describe your event"
-                    required
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <Button type="submit" disabled={creating}>
-                    {creating ? 'Creating...' : 'Create Event'}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setShowCreateForm(false)}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </form>
+                
+                <form onSubmit={handleCreateEvent} className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Event Title *
+                    </label>
+                    <Input
+                      value={newEventTitle}
+                      onChange={(e) => setNewEventTitle(e.target.value)}
+                      placeholder="e.g., Summer BBQ, Movie Night, Birthday Party"
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Description <span className="text-gray-400 font-normal">(optional)</span>
+                    </label>
+                    <textarea
+                      value={newEventDescription}
+                      onChange={(e) => setNewEventDescription(e.target.value)}
+                      placeholder="Add some details about your event... (optional)"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+                      rows={3}
+                    />
+                  </div>
+                  
+                  <div className="flex gap-3 pt-2">
+                    <Button 
+                      type="submit" 
+                      disabled={creating}
+                      className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-xl transition-all duration-200 hover:scale-105"
+                    >
+                      {creating ? (
+                        <span className="flex items-center gap-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                          Creating...
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-2">
+                          <Plus className="w-4 h-4" />
+                          Create Event
+                        </span>
+                      )}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowCreateForm(false)}
+                      className="px-6 py-3 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl transition-all duration-200"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              </div>
             </div>
           )}
         </div>
@@ -237,7 +268,7 @@ export default function DashboardPage() {
                     {event.title}
                   </h3>
                   <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                    {event.description}
+                    {event.description || 'No description provided'}
                   </p>
                   
                   <div className="flex items-center justify-between text-sm text-gray-500">

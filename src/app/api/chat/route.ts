@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { EventPlanningAgent } from '@/lib/ai-agent';
+import { LangChainEventAgent } from '@/lib/langchain-agent';
 import { createMessage, getEventMessages, updateEventSchedule } from '@/lib/db';
 import { ChatRequest } from '@/types';
 
@@ -23,8 +23,8 @@ export async function POST(request: NextRequest) {
       previousMessages = previousMessages.slice(-10);
     }
 
-    // Initialize AI agent
-    const agent = new EventPlanningAgent();
+    // Initialize LangChain AI agent
+    const agent = new LangChainEventAgent();
 
     // Process the chat request
     const aiResponse = await agent.processChat({
