@@ -72,9 +72,13 @@ export default function DashboardPage() {
         setNewEventDescription('');
         setShowCreateForm(false);
         fetchUserEvents(); // Refresh events list
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create event');
       }
     } catch (error) {
       console.error('Error creating event:', error);
+      alert(error instanceof Error ? error.message : 'Failed to create event. Please try again.');
     } finally {
       setCreating(false);
     }
@@ -157,82 +161,96 @@ export default function DashboardPage() {
         <div className="mb-8">
           {!showCreateForm ? (
             <Button
-              onClick={() => setShowCreateForm(true)}
+              onClick={() => {
+                setShowCreateForm(true);
+                setCreating(false);
+                setNewEventTitle('');
+                setNewEventDescription('');
+              }}
               className="mb-6"
             >
               <Plus className="w-4 h-4 mr-2" />
               Create New Event
             </Button>
           ) : (
-            <div className="glass-card rounded-2xl p-8 mb-6 relative overflow-hidden">
+            <div className="glass-card rounded-2xl p-8 mb-6 relative isolate">
               {/* Decorative background elements */}
-              <div className="absolute -top-4 -right-4 w-8 h-8 bg-gradient-to-r from-blue-300 to-purple-300 rounded-full opacity-30"></div>
-              <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-gradient-to-r from-purple-300 to-indigo-300 rounded-full opacity-30"></div>
+              <div className="absolute -top-4 -right-4 w-8 h-8 bg-gradient-to-r from-blue-300 to-purple-300 rounded-full opacity-30 pointer-events-none" />
+              <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-gradient-to-r from-purple-300 to-indigo-300 rounded-full opacity-30 pointer-events-none" />
               
-              <div className="relative z-10">
+              <form onSubmit={handleCreateEvent} className="flex flex-col gap-6 relative z-10">
                 <div className="text-center mb-6">
                   <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
                     Create New Event
                   </h2>
                   <p className="text-gray-600 text-sm">Plan something amazing with your friends! 🎉</p>
                 </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Event Title *
+                  </label>
+                  <Input
+                    value={newEventTitle}
+                    onChange={(e) => setNewEventTitle(e.target.value)}
+                    placeholder="e.g., Summer BBQ, Movie Night, Birthday Party"
+                    required
+                    autoFocus
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  />
+                </div>
                 
-                <form onSubmit={handleCreateEvent} className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Event Title *
-                    </label>
-                    <Input
-                      value={newEventTitle}
-                      onChange={(e) => setNewEventTitle(e.target.value)}
-                      placeholder="e.g., Summer BBQ, Movie Night, Birthday Party"
-                      required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Description <span className="text-gray-400 font-normal">(optional)</span>
-                    </label>
-                    <textarea
-                      value={newEventDescription}
-                      onChange={(e) => setNewEventDescription(e.target.value)}
-                      placeholder="Add some details about your event... (optional)"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
-                      rows={3}
-                    />
-                  </div>
-                  
-                  <div className="flex gap-3 pt-2">
-                    <Button 
-                      type="submit" 
-                      disabled={creating}
-                      className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-xl transition-all duration-200 hover:scale-105"
-                    >
-                      {creating ? (
-                        <span className="flex items-center gap-2">
-                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                          Creating...
-                        </span>
-                      ) : (
-                        <span className="flex items-center gap-2">
-                          <Plus className="w-4 h-4" />
-                          Create Event
-                        </span>
-                      )}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setShowCreateForm(false)}
-                      className="px-6 py-3 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl transition-all duration-200"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </form>
-              </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Description <span className="text-gray-400 font-normal">(optional)</span>
+                  </label>
+                  <textarea
+                    value={newEventDescription}
+                    onChange={(e) => setNewEventDescription(e.target.value)}
+                    placeholder="Add some details about your event... (optional)"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+                    rows={3}
+                  />
+                </div>
+                
+                <div className="flex gap-3 pt-2">
+                  <Button 
+                    type="submit" 
+                    disabled={creating}
+                    onClick={(e) => {
+                      if (creating) {
+                        e.preventDefault();
+                        return;
+                      }
+                      if (!newEventTitle.trim()) {
+                        e.preventDefault();
+                        return;
+                      }
+                      // Let the form's onSubmit handle the actual submission
+                    }}
+                    className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-xl transition-all duration-200 hover:scale-105 disabled:from-blue-400 disabled:to-purple-400 relative z-20"
+                  >
+                    {creating ? (
+                      <span className="flex items-center gap-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                        Creating...
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-2">
+                        <Plus className="w-4 h-4" />
+                        Create Event
+                      </span>
+                    )}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowCreateForm(false)}
+                    className="px-6 py-3 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl transition-all duration-200"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
             </div>
           )}
         </div>

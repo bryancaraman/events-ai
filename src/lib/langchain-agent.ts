@@ -293,8 +293,8 @@ Keep ALL responses under 7 sentences for brainstorming, under 10 sentences for f
         // Execute tools and gather information
         const toolResults = await this.executeTools(toolsToUse, userInput);
         
-        // Generate final response with LLM using tool results
-        const finalPrompt = this.buildFinalPrompt(userInput, toolResults);
+        // Generate final response with LLM using tool results and chat history
+        const finalPrompt = this.buildFinalPrompt(userInput, toolResults, input.chat_history);
         const response = await this.llm.call(finalPrompt);
         
         return {
@@ -352,20 +352,32 @@ Keep ALL responses under 7 sentences for brainstorming, under 10 sentences for f
     return results;
   }
 
-  private buildFinalPrompt(userInput: string, toolResults: any[]): string {
-    let prompt = `User Request: ${userInput}\n\n`;
+  private buildFinalPrompt(userInput: string, toolResults: any[], chatHistory?: any[]): string {
+    let prompt = '';
+
+    // Add chat history context if available
+    if (chatHistory && chatHistory.length > 0) {
+      prompt += "Previous Conversation:\n";
+      for (const msg of chatHistory) {
+        prompt += `${msg.role === 'human' ? 'User' : 'Assistant'}: ${msg.content}\n`;
+      }
+      prompt += '\n';
+    }
+    
+    prompt += `User Request: ${userInput}\n\n`;
     
     prompt += "Tool Results:\n";
     for (const result of toolResults) {
       prompt += `${result.tool}:\n${result.result || result.error}\n\n`;
     }
     
-    prompt += `Based on the user's request and tool results, provide a CONCISE response following these rules:
+    prompt += `Based on the conversation history, user's request, and tool results, provide a CONCISE response following these rules:
 
 BRAINSTORMING REQUEST (vague/exploring): Give 3-4 quick options, each in 1 line. Total: 3 sentences max.
 FOCUSED REQUEST (specific details): Give 1 clear itinerary with times and venues. Total: 5 sentences max.
 
-Use tool data but be brief. NO explanations about using tools. Just actionable recommendations.`;
+Use tool data but be brief. NO explanations about using tools. Just actionable recommendations.
+Remember the context from previous messages when making suggestions.`;
     
     return prompt;
   }

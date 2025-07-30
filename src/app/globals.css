@@ -82,11 +82,20 @@
 
   /* Glass card effect */
   .glass-card {
+    isolation: isolate;
     background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.3);
     box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.15);
     transition: all 0.3s ease;
+  }
+  
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(8px);
+    pointer-events: none;
+    z-index: -1;
   }
   
   .glass-card:hover {
